@@ -1,0 +1,28 @@
+{
+    "name": "interceptor",
+    "version": "0.0.1",
+    "description": "Cache engine",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/megaads-vn/interceptor.git"
+    },
+    "keywords": [
+        "web cache",
+        "caching",
+        "full page cache",
+        "cache engine"
+    ],
+    "author": "Megaads",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/megaads-vn/interceptor/issues"
+    },
+    "homepage": "https://github.com/megaads-vn/interceptor",
+    "dependencies": {
+        "url-pattern": "1.*"
+    }
+}

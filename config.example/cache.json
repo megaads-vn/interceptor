@@ -1,0 +1,26 @@
+{
+    "enable": true,
+    "maxAge": 3000,
+    "ignore": {
+        "header": [],
+        "params": [
+            "clearCache=true"
+        ]
+    },
+    "routes": [
+        {
+            "name": "home",
+            "pattern": "/",
+            "type" : "match"
+        },
+        {
+            "name": "product",
+            "pattern": "^\\/([a-zA-Z0-9\\-]+)$",
+            "type" : "regex",
+            "flush": {
+                "data": ["chi_product"]
+            }
+        }
+    ],
+    "groups": []
+}
