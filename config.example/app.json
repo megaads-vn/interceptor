@@ -1,5 +1,3 @@
 {
-    "port": 88,
-    "backendHost": "prettymom.vn",
-    "backendPort": 80
+    "port": 88    
 }

@@ -1,26 +1,33 @@
 {
-    "enable": true,
-    "maxAge": 3000,
-    "ignore": {
-        "header": [],
-        "params": [
-            "clearCache=true"
-        ]
-    },
-    "routes": [
-        {
-            "name": "home",
-            "pattern": "/",
-            "type" : "match"
-        },
-        {
-            "name": "product",
-            "pattern": "^\\/([a-zA-Z0-9\\-]+)$",
-            "type" : "regex",
-            "flush": {
-                "data": ["chi_product"]
+    "localhost:88": {
+        "enable": true,
+        "host": "prettymom.vn",
+        "port": 80,
+        "dataChangeRoute": "",
+        "maxAge": 3000,
+        "routes": [
+            {
+                "name": "home",
+                "pattern": "/",
+                "type": "match",
+                "maxAge": 3000
+            },
+            {
+                "name": "product",
+                "pattern": "^\\/([a-zA-Z0-9\\-]+)$",
+                "type": "regex",
+                "ignore": {
+                    "header": [],
+                    "params": [
+                        "clearCache=true"
+                    ]
+                },
+                "flush": {
+                    "data": [
+                        "chi_product"
+                    ]
+                }
             }
-        }
-    ],
-    "groups": []
+        ]
+    }
 }

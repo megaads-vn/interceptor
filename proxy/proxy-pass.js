@@ -3,14 +3,14 @@ var http = require('http');
 function ProxyPass() {
     this.pass = function (host, port, req, res) {
         let options = {
-            "hostname": host,
-            "port": port,
+            "hostname": host || req.headers.host,
+            "port": port || 80,
             "path": req.url,
             "method": req.method,
             "headers": req.headers,
             "gzip": true
         };
-        options.headers.host = host;
+        options.headers.host = host || req.headers.host;
         let proxy = http.request(options, function (proxyRes) {
             res.writeHead(proxyRes.statusCode, proxyRes.headers)
             proxyRes.pipe(res, {
