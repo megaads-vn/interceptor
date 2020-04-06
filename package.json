@@ -23,6 +23,7 @@
     },
     "homepage": "https://github.com/megaads-vn/interceptor",
     "dependencies": {
+        "mega-hybrid-cache": "*",
         "url-pattern": "1.*"
     }
 }
