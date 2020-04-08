@@ -1,5 +1,6 @@
 module.exports = new RuleParser();
-var UrlPattern = require('url-pattern');
+var UrlPattern = require("url-pattern");
+var urlParser = require("url");
 function RuleParser() {
     var urlPatterns = [];
     var cacheConfig;
@@ -38,8 +39,10 @@ function RuleParser() {
                 || (req.headers["accept"] != null && req.headers["accept"].indexOf("text/html") >= 0)) {
                 let cacheRules = domainCacheConfig.rules;
                 cacheRules.forEach(item => {
-                    matches = item.urlPattern.match(req.url);
-                    if (matches != null) {
+                    const urlPath = urlParser.parse(req.url).pathname;
+                    matches = item.urlPattern.match(urlPath);
+                    if (matches != null
+                        && (item.ignore == null || item.ignore.routes == null || item.ignore.routes.includes(urlPath) === false)) {
                         retval = {
                             "enable": true,
                             "domain": domain,
@@ -50,7 +53,7 @@ function RuleParser() {
                             "flush": item.flush,
                             "ignore": item.ignore,
                             "dataChangeRoute": domainCacheConfig.dataChangeRoute
-                        };
+                        };                        
                         return;
                     }
                 });

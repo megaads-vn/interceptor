@@ -1,7 +1,7 @@
 {
     "name": "interceptor",
     "version": "0.0.1",
-    "description": "Cache engine",
+    "description": "Web cache engine and HTTP reverse proxy",
     "main": "app.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"

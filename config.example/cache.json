@@ -21,7 +21,9 @@
                     "params": [
                         "cache=false"
                     ],
-                    "routes": []
+                    "routes": [
+                        "/gio-hang"
+                    ]                    
                 },
                 "flush": {
                     "data": [
