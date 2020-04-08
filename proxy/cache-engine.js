@@ -18,6 +18,7 @@ function CacheEngine() {
         if (cacheParserResult != null && cacheParserResult.enable == true) {
             let cacheData = hybridCache.get(cacheParserResult.domain + "::" + cacheParserResult.name + "::" + req.url);
             if (cacheData == null) {
+                console.log("CACHE MISS", req.url, cacheParserResult);
                 proxyPass.request(cacheParserResult.domain, cacheParserResult.host, cacheParserResult.port, req, res, function (result) {
                     result.headers["Interceptor-Cache"] = "MISS";
                     delete result.headers["set-cookie"];
@@ -27,7 +28,7 @@ function CacheEngine() {
                     hybridCache.put(cacheParserResult.domain + "::" + cacheParserResult.name + "::" + req.url, result, cacheParserResult.maxAge);
                 });
             } else {
-                console.log("CACHE HIT", req.url);                
+                console.log("CACHE HIT", req.url);
                 cacheData.headers["Interceptor-Cache"] = "HIT";
                 res.writeHead(cacheData.statusCode, cacheData.headers);
                 res.end(Buffer.from(cacheData.data));

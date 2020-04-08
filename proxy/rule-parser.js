@@ -33,24 +33,28 @@ function RuleParser() {
         if (domainCacheConfig != null) {
             retval["host"] = domainCacheConfig.host;
             retval["port"] = domainCacheConfig.port;
-            let cacheRules = domainCacheConfig.rules;
-            cacheRules.forEach(item => {
-                matches = item.urlPattern.match(req.url);
-                if (matches != null) {
-                    retval = {
-                        "enable": req.method === "GET" ? domainCacheConfig.enable : false,
-                        "domain": domain,
-                        "host": domainCacheConfig.host,
-                        "port": domainCacheConfig.port,
-                        "name": item.name,
-                        "maxAge": item.maxAge == null ? domainCacheConfig.maxAge : item.maxAge,
-                        "flush": item.flush,
-                        "ignore": item.ignore,
-                        "dataChangeRoute": domainCacheConfig.dataChangeRoute
-                    };
-                    return;
-                }
-            });
+            if (req.method === "GET"
+                && (req.headers["Accept"] != null && req.headers["Accept"].indexOf("text/html") >= 0)
+                || (req.headers["accept"] != null && req.headers["accept"].indexOf("text/html") >= 0)) {
+                let cacheRules = domainCacheConfig.rules;
+                cacheRules.forEach(item => {
+                    matches = item.urlPattern.match(req.url);
+                    if (matches != null) {
+                        retval = {
+                            "enable": true,
+                            "domain": domain,
+                            "host": domainCacheConfig.host,
+                            "port": domainCacheConfig.port,
+                            "name": item.name,
+                            "maxAge": item.maxAge == null ? domainCacheConfig.maxAge : item.maxAge,
+                            "flush": item.flush,
+                            "ignore": item.ignore,
+                            "dataChangeRoute": domainCacheConfig.dataChangeRoute
+                        };
+                        return;
+                    }
+                });
+            }
         }
         return retval;
     };
