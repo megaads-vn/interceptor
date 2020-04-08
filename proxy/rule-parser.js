@@ -7,15 +7,15 @@ function RuleParser() {
         cacheConfig = _cacheConfig;
         for (const domain in cacheConfig) {
             if (cacheConfig.hasOwnProperty(domain)) {
-                const routes = cacheConfig[domain].routes;
-                routes.forEach(item => {
+                const rules = cacheConfig[domain].rules;
+                rules.forEach(item => {
                     let pattern = null;
                     switch (item.type) {
                         case 'regex':
-                            pattern = new UrlPattern(new RegExp(item.pattern));
+                            pattern = new UrlPattern(new RegExp(item.url));
                             break;
                         default:
-                            pattern = new UrlPattern(item.pattern);
+                            pattern = new UrlPattern(item.url);
                             break;
                     }
                     item.urlPattern = pattern;
@@ -33,8 +33,8 @@ function RuleParser() {
         if (domainCacheConfig != null) {
             retval["host"] = domainCacheConfig.host;
             retval["port"] = domainCacheConfig.port;
-            let cacheRoutes = domainCacheConfig.routes;
-            cacheRoutes.forEach(item => {
+            let cacheRules = domainCacheConfig.rules;
+            cacheRules.forEach(item => {
                 matches = item.urlPattern.match(req.url);
                 if (matches != null) {
                     retval = {

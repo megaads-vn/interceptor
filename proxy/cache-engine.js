@@ -18,17 +18,16 @@ function CacheEngine() {
         if (cacheParserResult != null && cacheParserResult.enable == true) {
             let cacheData = hybridCache.get(cacheParserResult.domain + "::" + cacheParserResult.name + "::" + req.url);
             if (cacheData == null) {
-                proxyPass.request(cacheParserResult.host, cacheParserResult.port, req, res, function (result) {
+                proxyPass.request(cacheParserResult.domain, cacheParserResult.host, cacheParserResult.port, req, res, function (result) {
                     result.headers["Interceptor-Cache"] = "MISS";
                     delete result.headers["set-cookie"];
                     delete result.headers["Set-Cookie"];
                     res.writeHead(result.statusCode, result.headers);
                     res.end(result.data);
-                    hybridCache.put(cacheParserResult.domain + "::" + cacheParserResult.name + "::" + req.url, JSON.stringify(result), cacheParserResult.maxAge);
+                    hybridCache.put(cacheParserResult.domain + "::" + cacheParserResult.name + "::" + req.url, result, cacheParserResult.maxAge);
                 });
             } else {
-                console.log("CACHE HIT", req.url);
-                cacheData = JSON.parse(cacheData);
+                console.log("CACHE HIT", req.url);                
                 cacheData.headers["Interceptor-Cache"] = "HIT";
                 res.writeHead(cacheData.statusCode, cacheData.headers);
                 res.end(Buffer.from(cacheData.data));
@@ -45,9 +44,9 @@ function CacheEngine() {
             });
         } else {
             if (cacheParserResult == null) {
-                proxyPass.pass(null, null, req, res);
+                proxyPass.pass(cacheParserResult.domain, null, null, req, res);
             } else {
-                proxyPass.pass(cacheParserResult.host, cacheParserResult.port, req, res);
+                proxyPass.pass(cacheParserResult.domain, cacheParserResult.host, cacheParserResult.port, req, res);
             }
         }
     }

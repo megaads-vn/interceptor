@@ -1,7 +1,7 @@
 module.exports = new ProxyPass();
 var http = require('http');
 function ProxyPass() {
-    this.pass = function (host, port, req, res) {
+    this.pass = function (domain, host, port, req, res) {
         let options = {
             "hostname": host || req.headers.host,
             "port": port || 80,
@@ -10,7 +10,7 @@ function ProxyPass() {
             "headers": req.headers,
             "gzip": true
         };
-        options.headers.host = host || req.headers.host;
+        options.headers.host = domain;
         let proxy = http.request(options, function (proxyRes) {
             res.writeHead(proxyRes.statusCode, proxyRes.headers)
             proxyRes.pipe(res, {
@@ -21,7 +21,7 @@ function ProxyPass() {
             end: true
         });
     };
-    this.request = function (host, port, req, res, callBackFn) {
+    this.request = function (domain, host, port, req, res, callBackFn) {
         let options = {
             hostname: host,
             port: port,
@@ -30,7 +30,7 @@ function ProxyPass() {
             headers: req.headers,
             gzip: true
         };
-        options.headers["host"] = host;
+        options.headers["host"] = domain;
         http.get(options, function (proxyRes) {
             let contentType = proxyRes.headers["content-type"];
             if (contentType != null && contentType.indexOf("text/html") >= 0) {

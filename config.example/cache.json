@@ -1,26 +1,27 @@
 {
     "localhost:88": {
         "enable": true,
-        "host": "prettymom.vn",
-        "port": 80,
+        "host": "128.199.140.181",
+        "port": 800,
         "dataChangeRoute": "",
         "maxAge": 3000,
-        "routes": [
+        "rules": [
             {
                 "name": "home",
-                "pattern": "/",
+                "url": "/",
                 "type": "match",
                 "maxAge": 3000
             },
             {
                 "name": "product",
-                "pattern": "^\\/([a-zA-Z0-9\\-]+)$",
+                "url": "^\\/([a-zA-Z0-9\\-\\.]+)$",
                 "type": "regex",
                 "ignore": {
                     "header": [],
                     "params": [
-                        "clearCache=true"
-                    ]
+                        "cache=false"
+                    ],
+                    "routes": []
                 },
                 "flush": {
                     "data": [
