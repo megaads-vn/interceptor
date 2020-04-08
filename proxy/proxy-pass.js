@@ -45,8 +45,6 @@ function ProxyPass() {
                         "headers": proxyRes.headers,
                         "data": buffer
                     });
-                    // res.writeHead(proxyRes.statusCode, proxyRes.headers);
-                    // res.end(buffer);
                 });
             } else {
                 res.writeHead(proxyRes.statusCode, proxyRes.headers)
