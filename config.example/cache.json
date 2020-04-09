@@ -1,36 +1,46 @@
 {
     "localhost:88": {
-        "enable": true,
         "host": "128.199.140.181",
         "port": 800,
-        "dataChangeRoute": "",
-        "maxAge": 3000,
-        "rules": [
-            {
-                "name": "home",
-                "url": "/",
-                "type": "match",
-                "maxAge": 3000
-            },
-            {
-                "name": "product",
-                "url": "^\\/([a-zA-Z0-9\\-\\.]+)$",
-                "type": "regex",
-                "ignore": {
-                    "header": [],
-                    "params": [
-                        "cache=false"
-                    ],
-                    "routes": [
-                        "/gio-hang"
-                    ]                    
+        "cache": {
+            "enable": true,
+            "maxAge": 3000,
+            "dataChangeRoute": "",
+            "devices": [
+                "desktop",
+                "mobile",
+                "tablet"
+            ],
+            "rules": [
+                {
+                    "name": "home",
+                    "url": "/",
+                    "type": "match",
+                    "maxAge": 3000
                 },
-                "flush": {
-                    "data": [
-                        "chi_product"
-                    ]
+                {
+                    "name": "product",
+                    "url": "^\\/([a-zA-Z0-9\\-\\.]+)$",
+                    "type": "regex",
+                    "ignore": {
+                        "header": [],
+                        "params": [
+                            "cache=false"
+                        ],
+                        "routes": [
+                            "/gio-hang",
+                            "/add-cart",
+                            "/dang-ky",
+                            "/dang-nhap"
+                        ]
+                    },
+                    "flush": {
+                        "data": [
+                            "chi_product"
+                        ]
+                    }
                 }
-            }
-        ]
+            ]
+        }
     }
 }

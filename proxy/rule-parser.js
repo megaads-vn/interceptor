@@ -1,14 +1,15 @@
 module.exports = new RuleParser();
 var UrlPattern = require("url-pattern");
 var urlParser = require("url");
+var userAgentUtil = use("util/user-agent-util");
 function RuleParser() {
-    var urlPatterns = [];
     var cacheConfig;
+    var parserCache = [];
     this.init = function (_cacheConfig) {
         cacheConfig = _cacheConfig;
         for (const domain in cacheConfig) {
             if (cacheConfig.hasOwnProperty(domain)) {
-                const rules = cacheConfig[domain].rules;
+                let rules = (cacheConfig[domain].cache != null && cacheConfig[domain].cache.enable == true && cacheConfig[domain].cache.rules != null) ? cacheConfig[domain].cache.rules : [];
                 rules.forEach(item => {
                     let pattern = null;
                     switch (item.type) {
@@ -34,29 +35,44 @@ function RuleParser() {
         if (domainCacheConfig != null) {
             retval["host"] = domainCacheConfig.host;
             retval["port"] = domainCacheConfig.port;
+            // Conditions: method, headers["accept"], url, headers['user-agent']
+            // check method and accept type
             if (req.method === "GET"
-                && (req.headers["Accept"] != null && req.headers["Accept"].indexOf("text/html") >= 0)
-                || (req.headers["accept"] != null && req.headers["accept"].indexOf("text/html") >= 0)) {
-                let cacheRules = domainCacheConfig.rules;
-                cacheRules.forEach(item => {
-                    const urlPath = urlParser.parse(req.url).pathname;
-                    matches = item.urlPattern.match(urlPath);
-                    if (matches != null
-                        && (item.ignore == null || item.ignore.routes == null || item.ignore.routes.includes(urlPath) === false)) {
-                        retval = {
-                            "enable": true,
-                            "domain": domain,
-                            "host": domainCacheConfig.host,
-                            "port": domainCacheConfig.port,
-                            "name": item.name,
-                            "maxAge": item.maxAge == null ? domainCacheConfig.maxAge : item.maxAge,
-                            "flush": item.flush,
-                            "ignore": item.ignore,
-                            "dataChangeRoute": domainCacheConfig.dataChangeRoute
-                        };                        
-                        return;
-                    }
-                });
+                && (req.headers["accept"] != null
+                    && (req.headers["accept"].indexOf("text/html") >= 0
+                        || req.headers["accept"] == "*/*"))
+            ) {
+                // check user device
+                const userDevice = userAgentUtil.detectDevice(req.headers['user-agent']);
+                if (domainCacheConfig.cache.devices == null) {
+                    retval["device"] = "all";
+                } else if (domainCacheConfig.cache.devices.includes(userDevice)) {
+                    retval["device"] = userDevice;
+                }
+                if (retval["device"] != null) {
+                    let cacheRules = domainCacheConfig.cache != null && domainCacheConfig.cache.enable == true && domainCacheConfig.cache.rules != null ? domainCacheConfig.cache.rules : [];
+                    cacheRules.forEach(item => {
+                        const urlPath = urlParser.parse(req.url).pathname;
+                        matches = item.urlPattern.match(urlPath);
+                        if (matches != null
+                            && (item.ignore == null
+                                || item.ignore.routes == null
+                                || item.ignore.routes.includes(urlPath) === false)
+                        ) {
+                            for (var property in domainCacheConfig.cache) {
+                                retval[property] = domainCacheConfig.cache[property];
+                            }
+                            for (var property in item) {
+                                retval[property] = domainCacheConfig.cache[property];
+                            }
+                            retval["host"] = domainCacheConfig.host;
+                            retval["port"] = domainCacheConfig.port;
+                            retval["domain"] = domain;
+                            retval["name"] = item.name;
+                            return;
+                        }
+                    });
+                }
             }
         }
         return retval;

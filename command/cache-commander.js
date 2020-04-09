@@ -1,6 +1,6 @@
 module.exports = CacheCommander;
 var UrlPattern = require('url-pattern');
-var RequestHandler = require(__homedir + "/network/request-handler");
+var RequestHandler = use("network/request-handler");
 const HybridCache = require("mega-hybrid-cache");
 var hybridCache = new HybridCache({
     limit: 24 * 60 * 60

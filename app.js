@@ -1,8 +1,11 @@
 global.__homedir = __dirname;
-const AppConfig = require(__homedir + "/config/app");
-const HttpServer = require(__homedir + "/network/http-server");
-const CacheEngine = require(__homedir + "/proxy/cache-engine");
-const CacheCommander = require(__homedir + "/command/cache-commander");
+global.use = function (packagePath) {
+    return require(__homedir + "/" + packagePath);
+};
+const AppConfig = use("config/app");
+const HttpServer = use("network/http-server");
+const CacheEngine = use("proxy/cache-engine");
+const CacheCommander = use("command/cache-commander");
 let server = new HttpServer();
 let cacheEngine = new CacheEngine();
 let cacheCommander = new CacheCommander();
