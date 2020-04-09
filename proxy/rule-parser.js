@@ -26,18 +26,21 @@ function RuleParser() {
         }
     };
     this.parse = function (req) {
+        let retval = null;
         const domain = req.headers.host;
         const domainCacheConfig = cacheConfig[domain];
-        let retval = {
-            "enable": false,
-            "domain": domain
-        };
         if (domainCacheConfig != null) {
-            retval["host"] = domainCacheConfig.host;
-            retval["port"] = domainCacheConfig.port;
+            retval = {
+                "enable": false,
+                "domain": domain,
+                "host": domainCacheConfig.host,
+                "port": domainCacheConfig.port
+            };
             // Conditions: method, headers["accept"], url, headers['user-agent']
             // check method and accept type
-            if (req.method === "GET"
+            if (domainCacheConfig.cache != null
+                && domainCacheConfig.cache.enable == true
+                && req.method === "GET"
                 && (req.headers["accept"] != null
                     && (req.headers["accept"].indexOf("text/html") >= 0
                         || req.headers["accept"] == "*/*"))
@@ -50,7 +53,7 @@ function RuleParser() {
                     retval["device"] = userDevice;
                 }
                 if (retval["device"] != null) {
-                    let cacheRules = domainCacheConfig.cache != null && domainCacheConfig.cache.enable == true && domainCacheConfig.cache.rules != null ? domainCacheConfig.cache.rules : [];
+                    let cacheRules = domainCacheConfig.cache.rules != null ? domainCacheConfig.cache.rules : [];
                     cacheRules.forEach(item => {
                         const urlPath = urlParser.parse(req.url).pathname;
                         matches = item.urlPattern.match(urlPath);

@@ -10,7 +10,7 @@ function ProxyPass() {
             "headers": req.headers,
             "gzip": true
         };
-        options.headers.host = domain;
+        options.headers["host"] = domain;
         let proxy = http.request(options, function (proxyRes) {
             res.writeHead(proxyRes.statusCode, proxyRes.headers)
             proxyRes.pipe(res, {
@@ -31,7 +31,7 @@ function ProxyPass() {
             gzip: true
         };
         options.headers["host"] = domain;
-        http.get(options, function (proxyRes) {
+        let proxy = http.request(options, function (proxyRes) {
             let contentType = proxyRes.headers["content-type"];
             if (contentType != null && contentType.indexOf("text/html") >= 0) {
                 let buffer = [];
@@ -54,6 +54,9 @@ function ProxyPass() {
             }
         }).on("error", (err) => {
             console.log("Error: " + err.message);
+        });
+        req.pipe(proxy, {
+            end: true
         });
     }
 }

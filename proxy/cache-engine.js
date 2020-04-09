@@ -15,6 +15,7 @@ function CacheEngine() {
     this.onRequest = function (req, res) {
         let startTime = process.hrtime();
         let cacheParserResult = ruleParser.parse(req);
+        console.log("req.url", req.url);
         if (cacheParserResult != null && cacheParserResult.enable == true) {
             const cacheKey = cacheParserResult.domain + "::"
                 + cacheParserResult.name + "::"
@@ -38,6 +39,7 @@ function CacheEngine() {
                 console.log("Execution time: %dms", process.hrtime(startTime)[1] / 1000000);
             }
         } else if (req.method === "POST"
+            && cacheParserResult != null
             && req.headers.host === cacheParserResult.domain
             && req.url === cacheParserResult.dataChangeRoute) {
             let dataBuffer = "";
@@ -47,12 +49,11 @@ function CacheEngine() {
             req.on("end", function () {
                 onDataChange(JSON.parse(dataBuffer));
             });
+        } else if (cacheParserResult != null) {
+            proxyPass.pass(cacheParserResult.domain, cacheParserResult.host, cacheParserResult.port, req, res);
         } else {
-            if (cacheParserResult == null) {
-                proxyPass.pass(cacheParserResult.domain, null, null, req, res);
-            } else {
-                proxyPass.pass(cacheParserResult.domain, cacheParserResult.host, cacheParserResult.port, req, res);
-            }
+            res.writeHead(500, {});
+            res.end("Interceptor. Internal Server Error");
         }
     }
     function onDataChange(domain, data) {
