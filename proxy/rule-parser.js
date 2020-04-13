@@ -42,8 +42,7 @@ function RuleParser() {
                 && domainCacheConfig.cache.enable == true
                 && req.method === "GET"
                 && (req.headers["accept"] != null
-                    && (req.headers["accept"].indexOf("text/html") >= 0
-                        || req.headers["accept"] == "*/*"))
+                    && (req.headers["accept"].indexOf("text/html") >= 0))
             ) {
                 // check user device
                 const userDevice = userAgentUtil.detectDevice(req.headers['user-agent']);

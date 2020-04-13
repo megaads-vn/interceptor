@@ -4,15 +4,22 @@ var RequestHandler = use("network/request-handler");
 var proxyPass = use("proxy/proxy-pass");
 var ruleParser = use("proxy/rule-parser");
 const HybridCache = require("mega-hybrid-cache");
+var hybridCache = new HybridCache({
+    limit: 1024
+});
+const CacheCommander = use("proxy/cache-commander");
+var cacheCommander = new CacheCommander(hybridCache);
 function CacheEngine() {
     var self = this;
-    var hybridCache = new HybridCache({
-        limit: 1024
-    });
     this.init = function () {
         ruleParser.init(cacheConfig);
     }
     this.onRequest = function (req, res) {
+        // commander
+        if (req.url.indexOf("interceptor") >= 0) {
+            return cacheCommander.command(req, res);
+        }
+        // cache response
         let startTime = process.hrtime();
         let cacheParserResult = ruleParser.parse(req);
         console.log("req.url", req.url);

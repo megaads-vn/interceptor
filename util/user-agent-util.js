@@ -6,7 +6,9 @@ function UserAgentUtil() {
         var retval = detectionCache[userAgent];
         if (retval == null) {
             let mobileDetect = new MobileDetect(userAgent);
-            if (mobileDetect.tablet() != null) {
+            if (mobileDetect.is('bot') === true) {
+                retval = "bot";
+            } else if (mobileDetect.tablet() != null) {
                 retval = "tablet";
             } else if (mobileDetect.phone() != null || mobileDetect.mobile() != null) {
                 retval = "mobile";

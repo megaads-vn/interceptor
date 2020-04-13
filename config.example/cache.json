@@ -23,7 +23,7 @@
                     "url": "^\\/([a-zA-Z0-9\\-\\.]+)$",
                     "type": "regex",
                     "ignore": {
-                        "header": [],
+                        "header": ["user_id"],
                         "params": [
                             "cache=false"
                         ],
