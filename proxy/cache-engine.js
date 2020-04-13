@@ -27,7 +27,7 @@ function CacheEngine() {
             const cacheKey = cacheParserResult.domain + "::"
                 + cacheParserResult.name + "::"
                 + cacheParserResult.device + "::"
-                + req.url;
+                + encodeURIComponent(req.url);
             let cacheData = hybridCache.get(cacheKey);
             if (cacheData == null) {
                 console.log("CACHE MISS", req.url);
