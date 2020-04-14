@@ -4,8 +4,14 @@ var allCachePattern = new UrlPattern("/interceptor/cache");
 var routeCachePattern = new UrlPattern("/interceptor/cache/:routeName");
 var deviceCachePattern = new UrlPattern("/interceptor/cache/:routeName/:device");
 var urlCachePattern = new UrlPattern("/interceptor/cache/:routeName/:device/:url");
-function CacheCommander(hybridCache) {
-    this.command = function (req, res) {
+var cacheConfig = null;
+var hybridCache = null;
+function CacheCommander() {
+    this.init = function (_cacheConfig, _hybridCache) {
+        cacheConfig = _cacheConfig;
+        hybridCache = _hybridCache;
+    }
+    this.command = function (req, res, cacheParserResult) {
         let retval = {
             "status": "success"
         }
@@ -63,11 +69,42 @@ function CacheCommander(hybridCache) {
                 console.log("command - get url cache data", cachekey);
                 retval["result"] = hybridCache.get(cachekey);
             }
+        } else if (req.method === "POST") {
+            for (const cacheDomain in cacheConfig) {
+                const cacheDomainConfig = cacheConfig[cacheDomain];
+                if (cacheDomain === domain
+                    && cacheDomainConfig.cache != null
+                    && cacheDomainConfig.cache.enable === true
+                    && cacheDomainConfig.cache.dataChangeRoute === req.url) {
+                    let dataBuffer = "";
+                    req.on("data", function (data) {
+                        dataBuffer += data;
+                    });
+                    req.on("end", function () {
+                        onDataChange(domain, cacheDomainConfig, JSON.parse(dataBuffer));
+                    });
+                    break;
+                }
+            }
         }
         res.writeHead(200, {
             "Content-Type": "application/json",
             "Connection": "close"
         });
         res.end(JSON.stringify(retval));
+    }
+    function onDataChange(domain, cacheDomainConfig, data) {
+        var retval = false;
+        console.log("onDataChange", domain, data);
+        cacheDomainConfig.cache.rules.forEach(rule => {
+            if (rule.flush != null && rule.flush.data.indexOf(data.table) >= 0) {
+                let tag = domain + "::" + rule.name;
+                console.log("delete route caches: " + tag);
+                hybridCache.delTag(tag);
+                retval = true;
+                return;
+            }
+        });
+        return retval;
     }
 }

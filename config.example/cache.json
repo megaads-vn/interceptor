@@ -1,46 +1,49 @@
 {
+    "127.0.0.1:88": {
+        "host": "128.199.140.181",
+        "port": 800
+    },
     "localhost:88": {
         "host": "128.199.140.181",
         "port": 800,
         "cache": {
             "enable": true,
-            "maxAge": 3000,
+            "maxAge": 86400,
             "dataChangeRoute": "",
             "devices": [
                 "desktop",
                 "mobile",
-                "tablet"
+                "tablet",
+                "bot"
             ],
             "rules": [
                 {
                     "name": "home",
                     "url": "/",
                     "type": "match",
-                    "maxAge": 3000
+                    "maxAge": 3600
                 },
                 {
                     "name": "product",
                     "url": "^\\/([a-zA-Z0-9\\-\\.]+)$",
                     "type": "regex",
-                    "ignore": {
-                        "header": ["user_id"],
-                        "params": [
-                            "cache=false"
-                        ],
-                        "routes": [
-                            "/gio-hang",
-                            "/add-cart",
-                            "/dang-ky",
-                            "/dang-nhap"
-                        ]
-                    },
                     "flush": {
                         "data": [
                             "chi_product"
                         ]
                     }
                 }
-            ]
+            ],
+            "passes": {
+                "cookies": [
+                    "user_id"
+                ],
+                "routes": [
+                    "/gio-hang",
+                    "/dang-ky",
+                    "/dang-nhap"
+                ]
+            }
         }
     }
 }

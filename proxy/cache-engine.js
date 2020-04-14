@@ -8,11 +8,12 @@ var hybridCache = new HybridCache({
     limit: 1024
 });
 const CacheCommander = use("proxy/cache-commander");
-var cacheCommander = new CacheCommander(hybridCache);
+var cacheCommander = new CacheCommander();
 function CacheEngine() {
     var self = this;
     this.init = function () {
         ruleParser.init(cacheConfig);
+        cacheCommander.init(cacheConfig, hybridCache);
     }
     this.onRequest = function (req, res) {
         // commander
@@ -45,30 +46,12 @@ function CacheEngine() {
                 console.log("CACHE HIT", req.url);
                 console.log("Execution time: %dms", process.hrtime(startTime)[1] / 1000000);
             }
-        } else if (req.method === "POST"
-            && cacheParserResult != null
-            && req.headers.host === cacheParserResult.domain
-            && req.url === cacheParserResult.dataChangeRoute) {
-            let dataBuffer = "";
-            req.on("data", function (data) {
-                dataBuffer += data;
-            });
-            req.on("end", function () {
-                onDataChange(JSON.parse(dataBuffer));
-            });
         } else if (cacheParserResult != null) {
             proxyPass.pass(cacheParserResult.domain, cacheParserResult.host, cacheParserResult.port, req, res);
         } else {
             res.writeHead(500, {});
             res.end("Interceptor. Internal Server Error");
         }
-    }
-    function onDataChange(domain, data) {
-        // cacheConfig.routes.forEach(route => {
-        //     if (route.flush != null && route.flush.data.indexOf(data.table) >= 0) {
-        //         hybridCache.tags([domain + "::" + route]).flush();
-        //     }
-        // });
     }
 }
 CacheEngine.prototype = new RequestHandler();
