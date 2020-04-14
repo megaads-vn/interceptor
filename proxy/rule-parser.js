@@ -28,55 +28,76 @@ function RuleParser() {
     this.parse = function (req) {
         let retval = null;
         const domain = req.headers.host;
-        const domainCacheConfig = cacheConfig[domain];
-        if (domainCacheConfig != null) {
+        const domainConfig = cacheConfig[domain];
+        if (domainConfig != null) {
             retval = {
                 "enable": false,
                 "domain": domain,
-                "host": domainCacheConfig.host,
-                "port": domainCacheConfig.port
+                "host": domainConfig.host,
+                "port": domainConfig.port
             };
-            // Conditions: method, headers["accept"], url, headers['user-agent']
+            // Conditions: method, headers["cookie"], headers["accept"], url, headers['user-agent']
             // check method and accept type
-            if (domainCacheConfig.cache != null
-                && domainCacheConfig.cache.enable == true
+            if (domainConfig.cache != null
+                && domainConfig.cache.enable == true
                 && req.method === "GET"
                 && (req.headers["accept"] != null
                     && (req.headers["accept"].indexOf("text/html") >= 0))
             ) {
-                // check user device
-                const userDevice = userAgentUtil.detectDevice(req.headers['user-agent']);
-                if (domainCacheConfig.cache.devices == null) {
-                    retval["device"] = "all";
-                } else if (domainCacheConfig.cache.devices.includes(userDevice)) {
-                    retval["device"] = userDevice;
+                const urlPath = urlParser.parse(req.url).pathname;
+                // check passes conditions
+                let isPassed = false;
+                if (domainConfig.cache.passes != null) {
+                    // pass routes
+                    if (domainConfig.cache.passes.routes != null
+                        && domainConfig.cache.passes.routes.includes(urlPath) === true) {
+                        isPassed = true;
+                    }
+                    // pass cookies
+                    if (!isPassed
+                        && domainConfig.cache.passes.cookies != null
+                        && cookieIsContainAnyNames(req, domainConfig.cache.passes.cookies)) {
+                        isPassed = true;
+                    }
                 }
-                if (retval["device"] != null) {
-                    let cacheRules = domainCacheConfig.cache.rules != null ? domainCacheConfig.cache.rules : [];
-                    cacheRules.forEach(item => {
-                        const urlPath = urlParser.parse(req.url).pathname;
-                        matches = item.urlPattern.match(urlPath);
-                        if (matches != null
-                            && (item.ignore == null
-                                || item.ignore.routes == null
-                                || item.ignore.routes.includes(urlPath) === false)
-                        ) {
-                            for (var property in domainCacheConfig.cache) {
-                                retval[property] = domainCacheConfig.cache[property];
+                if (!isPassed) {
+                    // check user device
+                    const userDevice = userAgentUtil.detectDevice(req.headers['user-agent']);
+                    if (domainConfig.cache.devices == null) {
+                        retval["device"] = "all";
+                    } else if (domainConfig.cache.devices.includes(userDevice)) {
+                        retval["device"] = userDevice;
+                    }
+                    if (retval["device"] != null) {
+                        let cacheRules = domainConfig.cache.rules != null ? domainConfig.cache.rules : [];
+                        cacheRules.forEach(item => {
+                            matches = item.urlPattern.match(urlPath);
+                            if (matches != null) {
+                                for (var property in domainConfig.cache) {
+                                    retval[property] = domainConfig.cache[property];
+                                }
+                                for (var property in item) {
+                                    retval[property] = domainConfig.cache[property];
+                                }
+                                retval["host"] = domainConfig.host;
+                                retval["port"] = domainConfig.port;
+                                retval["domain"] = domain;
+                                retval["name"] = item.name;
+                                return;
                             }
-                            for (var property in item) {
-                                retval[property] = domainCacheConfig.cache[property];
-                            }
-                            retval["host"] = domainCacheConfig.host;
-                            retval["port"] = domainCacheConfig.port;
-                            retval["domain"] = domain;
-                            retval["name"] = item.name;
-                            return;
-                        }
-                    });
+                        });
+                    }
                 }
             }
         }
         return retval;
     };
+    function cookieIsContainAnyNames(req, names) {
+        for (var i = 0; i < names.length; i++) {
+            if (req.headers["cookie"].indexOf(" " + names[i] + "=") > -1) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
