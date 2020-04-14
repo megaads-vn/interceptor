@@ -94,7 +94,7 @@ function RuleParser() {
     };
     function cookieIsContainAnyNames(req, names) {
         for (var i = 0; i < names.length; i++) {
-            if (req.headers["cookie"].indexOf(" " + names[i] + "=") > -1) {
+            if (req.headers["cookie"] != null && req.headers["cookie"].indexOf(" " + names[i] + "=") > -1) {
                 return true;
             }
         }
