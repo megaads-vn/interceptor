@@ -1,3 +1,4 @@
 {
-    "port": 88    
+    "port": 88,
+    "debug": true
 }

@@ -3,6 +3,7 @@ var cacheConfig = use('config/cache');
 var RequestHandler = use("network/request-handler");
 var proxyPass = use("proxy/proxy-pass");
 var ruleParser = use("proxy/rule-parser");
+var logger = use("util/logger");
 const HybridCache = require("mega-hybrid-cache");
 var hybridCache = new HybridCache({
     limit: 1024
@@ -23,7 +24,7 @@ function CacheEngine() {
         // cache response
         let startTime = process.hrtime();
         let cacheParserResult = ruleParser.parse(req);
-        console.log("req.url", req.url);
+        logger.debug("req.url", req.url);
         if (cacheParserResult != null && cacheParserResult.enable == true) {
             const cacheKey = cacheParserResult.domain + "::"
                 + cacheParserResult.name + "::"
@@ -31,7 +32,7 @@ function CacheEngine() {
                 + encodeURIComponent(req.url);
             let cacheData = hybridCache.get(cacheKey);
             if (cacheData == null) {
-                console.log("CACHE MISS", req.url);
+                logger.debug("CACHE MISS", req.url);
                 proxyPass.request(cacheParserResult.domain, cacheParserResult.host, cacheParserResult.port, req, res, function (result) {
                     delete result.headers["set-cookie"];
                     result.headers["interceptor-cache"] = "MISS";
@@ -43,8 +44,8 @@ function CacheEngine() {
                 cacheData.headers["interceptor-cache"] = "HIT";
                 res.writeHead(cacheData.statusCode, cacheData.headers);
                 res.end(Buffer.from(cacheData.data));
-                console.log("CACHE HIT", req.url);
-                console.log("Execution time: %dms", process.hrtime(startTime)[1] / 1000000);
+                logger.debug("CACHE HIT", req.url);
+                logger.debug("Execution time: %dms", process.hrtime(startTime)[1] / 1000000);
             }
         } else if (cacheParserResult != null) {
             proxyPass.pass(cacheParserResult.domain, cacheParserResult.host, cacheParserResult.port, req, res);

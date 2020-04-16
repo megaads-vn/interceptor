@@ -1,5 +1,6 @@
 module.exports = new ProxyPass();
 var http = require('http');
+var logger = use("util/logger");
 function ProxyPass() {
     this.pass = function (domain, host, port, req, res) {
         let options = {
@@ -53,7 +54,7 @@ function ProxyPass() {
                 });
             }
         }).on("error", (err) => {
-            console.log("Error: " + err.message);
+            logger.error("Error: " + err.message);
         });
         req.pipe(proxy, {
             end: true

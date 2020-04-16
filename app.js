@@ -1,6 +1,6 @@
-global.__homedir = __dirname;
+global.__APP_DIR = __dirname;
 global.use = function (packagePath) {
-    return require(__homedir + "/" + packagePath);
+    return require(__APP_DIR + "/" + packagePath);
 };
 const AppConfig = use("config/app");
 const HttpServer = use("network/http-server");
