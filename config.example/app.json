@@ -1,4 +1,8 @@
 {
-    "port": 88,
-    "debug": true
+    "port": 80,
+    "debug": true,
+    "ssl": {
+        "enable": false,
+        "port": 443
+    }
 }

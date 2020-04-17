@@ -1,56 +1,53 @@
-module.exports = CacheCommander;
-var UrlPattern = require('url-pattern');
-var RequestHandler = use("network/request-handler");
+#!/usr/bin/env node
+const program = require('commander');
 const HybridCache = require("mega-hybrid-cache");
 var hybridCache = new HybridCache({
-    limit: 24 * 60 * 60
+    limit: 1024
 });
-var allCachePattern = new UrlPattern("/interceptor/cache");
-var routeCachePattern = new UrlPattern("/interceptor/cache/:routeName");
-var urlCachePattern = new UrlPattern("/interceptor/cache/:routeName/:url");
-function CacheCommander() {
-    this.onRequest = function (req, res) {
-        let retval = {
-            "status": "success"
+program
+    .command("get <domain>")
+    .option('-r, --route <route>', 'Route Name')
+    .option('-d, --device <device>', 'Device')
+    .option('-u, --url <url>', 'URL')
+    .option('-k, --key <key>', 'URL')
+    .description("Monitor cache data")
+    .action((domain, cmd) => {
+        const routeName = cmd.route;
+        const device = cmd.device;
+        const url = cmd.url;
+        const key = cmd.key;
+        if (key != null) {
+            console.log(hybridCache.get(key));
+        } else if (device != null && url != null) {
+            console.log(hybridCache.get(domain + "::" + routeName + "::" + device + "::" + url));
+        } else if (routeName != null) {
+            console.log(hybridCache.keys(domain + "::" + routeName + "::*"));
+        } else {
+            console.log(hybridCache.keys());
         }
-        let domain = req.headers.host;
-        if (req.method === "DELETE") {
-            if (allCachePattern.match(req.url) != null) {
-                console.log("command - delete all caches");
-                retval["result"] = hybridCache.flush();
-            } else if (routeCachePattern.match(req.url) != null) {
-                let patternMatch = routeCachePattern.match(req.url);
-                let routeName = patternMatch.routeName;
-                console.log("command - delete route cache", routeName);
-                retval["result"] = hybridCache.tags[domain, routeName].flush();
-            } else if (urlCachePattern.match(req.url) != null) {
-                let patternMatch = urlCachePattern.match(req.url);
-                let routeName = patternMatch.routeName;
-                let url = patternMatch.url;
-                console.log("command - delete url cache", routeName, url);
-                retval["result"] = hybridCache.tags[domain, routeName].forget(url);
-            }
-        } else if (req.method === "GET") {
-            if (routeCachePattern.match(req.url) != null) {
-                let patternMatch = routeCachePattern.match(req.url);
-                let routeName = patternMatch.routeName;
-                console.log("command - get route cache", routeName);
-                retval["result"] = hybridCache.tags[domain, routeName].keys("*");
-            } else if (urlCachePattern.match(req.url) != null) {
-                let patternMatch = urlCachePattern.match(req.url);
-                let routeName = patternMatch.routeName;
-                let url = patternMatch.url;
-                console.log("command - get url cache", routeName, url);
-                retval["result"] = hybridCache.tags[domain, routeName].get(url);
-            }
+    });
+program
+    .command("flush <domain>")
+    .option('-r, --route <route>', 'Route Name')
+    .option('-d, --device <device>', 'Device')
+    .option('-u, --url <url>', 'URL')
+    .option('-k, --key <key>', 'URL')
+    .description("Monitor cache data")
+    .action((domain, cmd) => {
+        const routeName = cmd.route;
+        const device = cmd.device;
+        const url = cmd.url;
+        const key = cmd.key;
+        if (key != null) {
+            console.log(hybridCache.get(key));
+        } else if (device != null && url != null) {
+            console.log(hybridCache.get(domain + "::" + routeName + "::" + device + "::" + url));
+        } else if (routeName != null) {
+            console.log(hybridCache.keys(domain + "::" + routeName + "::*"));
+        } else {
+            console.log("get all cache keys");
+            console.log(hybridCache.keys());
         }
-        if (retval["result"] != null) {
-            res.writeHead(200, {
-                "Content-Type": "application/json",
-                "Connection": "close"
-            });
-            res.end(JSON.stringify(retval));
-        }
-    }
-}
-CacheCommander.prototype = new RequestHandler();
+
+    });
+program.parse(process.argv);

@@ -3,13 +3,13 @@ var UrlPattern = require("url-pattern");
 var urlParser = require("url");
 var userAgentUtil = use("util/user-agent-util");
 function RuleParser() {
-    var cacheConfig;
+    var hostsConfig;
     var parserCache = [];
-    this.init = function (_cacheConfig) {
-        cacheConfig = _cacheConfig;
-        for (const domain in cacheConfig) {
-            if (cacheConfig.hasOwnProperty(domain)) {
-                let rules = (cacheConfig[domain].cache != null && cacheConfig[domain].cache.enable == true && cacheConfig[domain].cache.rules != null) ? cacheConfig[domain].cache.rules : [];
+    this.init = function (_hostsConfig) {
+        hostsConfig = _hostsConfig;
+        for (const domain in hostsConfig) {
+            if (hostsConfig.hasOwnProperty(domain)) {
+                let rules = (hostsConfig[domain].cache != null && hostsConfig[domain].cache.enable == true && hostsConfig[domain].cache.rules != null) ? hostsConfig[domain].cache.rules : [];
                 rules.forEach(item => {
                     let pattern = null;
                     switch (item.type) {
@@ -28,7 +28,7 @@ function RuleParser() {
     this.parse = function (req) {
         let retval = null;
         const domain = req.headers.host;
-        const domainConfig = cacheConfig[domain];
+        const domainConfig = hostsConfig[domain];
         if (domainConfig != null) {
             retval = {
                 "enable": false,

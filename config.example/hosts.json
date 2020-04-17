@@ -1,11 +1,16 @@
 {
-    "127.0.0.1:88": {
-        "host": "128.199.140.181",
-        "port": 800
+    "domain1.com": {
+        "host": "127.0.0.1",
+        "port": 3000
     },
-    "localhost:88": {
-        "host": "128.199.140.181",
-        "port": 800,
+    "domain2.com": {
+        "host": "127.0.0.1",
+        "port": 3001,
+        "ssl": {
+            "enable": false,
+            "cert": "~/.ssh/default-cert.pem",
+            "key": "~/.ssh/default-key.pem"
+        },
         "cache": {
             "enable": true,
             "maxAge": 86400,
@@ -39,9 +44,9 @@
                     "user_id"
                 ],
                 "routes": [
-                    "/gio-hang",
-                    "/dang-ky",
-                    "/dang-nhap"
+                    "/cart",
+                    "/register",
+                    "/login"
                 ]
             }
         }

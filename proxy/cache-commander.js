@@ -4,11 +4,11 @@ var allCachePattern = new UrlPattern("/interceptor/cache");
 var routeCachePattern = new UrlPattern("/interceptor/cache/:routeName");
 var deviceCachePattern = new UrlPattern("/interceptor/cache/:routeName/:device");
 var urlCachePattern = new UrlPattern("/interceptor/cache/:routeName/:device/:url");
-var cacheConfig = null;
+var hostsConfig = null;
 var hybridCache = null;
 function CacheCommander() {
-    this.init = function (_cacheConfig, _hybridCache) {
-        cacheConfig = _cacheConfig;
+    this.init = function (_hostsConfig, _hybridCache) {
+        hostsConfig = _hostsConfig;
         hybridCache = _hybridCache;
     }
     this.command = function (req, res, cacheParserResult) {
@@ -70,18 +70,18 @@ function CacheCommander() {
                 retval["result"] = hybridCache.get(cachekey);
             }
         } else if (req.method === "POST") {
-            for (const cacheDomain in cacheConfig) {
-                const cacheDomainConfig = cacheConfig[cacheDomain];
+            for (const cacheDomain in hostsConfig) {
+                const hostConfig = hostsConfig[cacheDomain];
                 if (cacheDomain === domain
-                    && cacheDomainConfig.cache != null
-                    && cacheDomainConfig.cache.enable === true
-                    && cacheDomainConfig.cache.dataChangeRoute === req.url) {
+                    && hostConfig.cache != null
+                    && hostConfig.cache.enable === true
+                    && hostConfig.cache.dataChangeRoute === req.url) {
                     let dataBuffer = "";
                     req.on("data", function (data) {
                         dataBuffer += data;
                     });
                     req.on("end", function () {
-                        onDataChange(domain, cacheDomainConfig, JSON.parse(dataBuffer));
+                        onDataChange(domain, hostConfig, JSON.parse(dataBuffer));
                     });
                     break;
                 }
@@ -93,10 +93,10 @@ function CacheCommander() {
         });
         res.end(JSON.stringify(retval));
     }
-    function onDataChange(domain, cacheDomainConfig, data) {
+    function onDataChange(domain, hostConfig, data) {
         var retval = false;
         console.log("onDataChange", domain, data);
-        cacheDomainConfig.cache.rules.forEach(rule => {
+        hostConfig.cache.rules.forEach(rule => {
             if (rule.flush != null && rule.flush.data.indexOf(data.table) >= 0) {
                 let tag = domain + "::" + rule.name;
                 console.log("delete route caches: " + tag);

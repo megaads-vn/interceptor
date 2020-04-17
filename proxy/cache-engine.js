@@ -1,5 +1,5 @@
 module.exports = CacheEngine;
-var cacheConfig = use('config/cache');
+var hostsConfig = use('config/hosts');
 var RequestHandler = use("network/request-handler");
 var proxyPass = use("proxy/proxy-pass");
 var ruleParser = use("proxy/rule-parser");
@@ -13,8 +13,8 @@ var cacheCommander = new CacheCommander();
 function CacheEngine() {
     var self = this;
     this.init = function () {
-        ruleParser.init(cacheConfig);
-        cacheCommander.init(cacheConfig, hybridCache);
+        ruleParser.init(hostsConfig);
+        cacheCommander.init(hostsConfig, hybridCache);
     }
     this.onRequest = function (req, res) {
         // commander
