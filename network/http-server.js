@@ -2,15 +2,37 @@ module.exports = HttpServer;
 const http = require('http');
 const https = require('vhttps');
 const logger = use("util/logger");
-function HttpServer(HostsConfig) {
+function HttpServer() {
     let handers = [];
+    let redirectHttpHosts = [];
     this.start = function (options) {
-        http.createServer(onRequest).listen(options.port);
-        logger.info("Server is listening on port: ", options.port);
         if (options.ssl.enable) {
+            options.ssl.hosts.forEach(sslHost => {
+                if (sslHost.redirectHttp) {
+                    redirectHttpHosts.push(hostname);
+                }
+            });
             https.createServer({}, options.ssl.hosts, onRequest).listen(options.ssl.port);
-            logger.info("SSL Server is listening on port: ", options.ssl.hosts);
+            logger.info("SSL Server is listening on port: ", options.ssl.port);
         }
+        http.createServer(function (req, res) {
+            if (redirectHttpHosts.indexOf(req.headers.host) > -1) {
+                res.writeHead(301, {
+                    "Location": "https://" + req.headers['host'].replace(options.port, options.ssl.port) + req.url
+                });
+                res.end(`<html>
+                <head><title>301 Moved Permanently</title></head>
+                <body>
+                <center><h1>301 Moved Permanently</h1></center>
+                <hr><center>Interceptor</center>
+                </body>
+                </html>`);
+            } else {
+                onRequest(req, res);
+            }
+
+        }).listen(options.port);
+        logger.info("Server is listening on port: ", options.port);
     }
     this.addHandler = function (handler) {
         if (handler.__proto__.constructor.name === "RequestHandler") {

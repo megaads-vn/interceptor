@@ -9,7 +9,8 @@
         "ssl": {
             "enable": false,
             "cert": "~/.ssh/default-cert.pem",
-            "key": "~/.ssh/default-key.pem"
+            "key": "~/.ssh/default-key.pem",
+            "redirectHttp": false
         },
         "cache": {
             "enable": true,
