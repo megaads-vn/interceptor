@@ -29,7 +29,8 @@ function buildServerOption() {
                 serverOptions.ssl.hosts.push({
                     "hostname": hostname,
                     "cert": fs.readFileSync(host.ssl.cert),
-                    "key": fs.readFileSync(host.ssl.key)
+                    "key": fs.readFileSync(host.ssl.key),
+                    "redirectHttp": host.ssl.redirectHttp
                 });
             }
         }
