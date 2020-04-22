@@ -54,12 +54,14 @@ function ProxyPass() {
             "gzip": true
         };
         options.headers["host"] = domain;
-        //options.headers["X-Forwarded-Host"] = domain;
-        //options.headers["X-Forwarded-For"] = domain;
-        options.headers["X_FORWARDED_PROTO"] = "https";
-        options.headers["X-Forwarded-Proto"] = "https";
-        options.headers["HTTP_X_FORWARDED_PROTO"] = "https"
-        options.headers["HTTPS"] = "on";
+        if (req.protocol == "https") {
+            //options.headers["X-Forwarded-Host"] = domain;
+            //options.headers["X-Forwarded-For"] = domain;
+            options.headers["X_FORWARDED_PROTO"] = "https";
+            options.headers["X-Forwarded-Proto"] = "https";
+            options.headers["HTTP_X_FORWARDED_PROTO"] = "https"
+            options.headers["HTTPS"] = "on";
+        }
         return options;
     }
 }

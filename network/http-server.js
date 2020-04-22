@@ -12,7 +12,10 @@ function HttpServer() {
                     redirectHttpHosts.push(hostname);
                 }
             });
-            https.createServer({}, options.ssl.hosts, onRequest).listen(options.ssl.port);
+            https.createServer({}, options.ssl.hosts, function (req, res) {
+                req.protocol = "https";
+                onRequest(req, res);
+            }).listen(options.ssl.port);
             logger.info("SSL Server is listening on port: ", options.ssl.port);
         }
         http.createServer(function (req, res) {
@@ -28,6 +31,7 @@ function HttpServer() {
                 </body>
                 </html>`);
             } else {
+                req.protocol = "http";
                 onRequest(req, res);
             }
 
