@@ -28,6 +28,7 @@ function CacheEngine() {
         if (cacheParserResult != null && cacheParserResult.enable == true) {
             const cacheKey = cacheParserResult.domain + "::"
                 + cacheParserResult.name + "::"
+                + req.protocol + "::"
                 + cacheParserResult.device + "::"
                 + encodeURIComponent(req.url);
             let cacheData = hybridCache.get(cacheKey);
