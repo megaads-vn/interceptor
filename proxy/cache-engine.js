@@ -10,6 +10,7 @@ var hybridCache = new HybridCache({
 });
 const CacheCommander = use("proxy/cache-commander");
 var cacheCommander = new CacheCommander();
+const CACHED_STATUS_CODES = [200, 203, 300, 301, 302, 304, 307, 410, 404];
 function CacheEngine() {
     var self = this;
     this.init = function () {
@@ -39,7 +40,10 @@ function CacheEngine() {
                     result.headers["interceptor-cache"] = "MISS";
                     res.writeHead(result.statusCode, result.headers);
                     res.end(result.data);
-                    hybridCache.put(cacheKey, result, cacheParserResult.maxAge);
+                    // after: check cached status
+                    if (CACHED_STATUS_CODES.indexOf(result.statusCode) > -1) {
+                        hybridCache.put(cacheKey, result, cacheParserResult.maxAge);
+                    }
                 });
             } else {
                 cacheData.headers["interceptor-cache"] = "HIT";
