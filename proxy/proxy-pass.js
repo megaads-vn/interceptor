@@ -3,15 +3,7 @@ var http = require('http');
 var logger = use("util/logger");
 function ProxyPass() {
     this.pass = function (domain, host, port, req, res) {
-        let options = {
-            "hostname": host || req.headers.host,
-            "port": port || 80,
-            "path": req.url,
-            "method": req.method,
-            "headers": req.headers,
-            "gzip": true
-        };
-        options.headers["host"] = domain;
+        let options = buildRequestOptions(domain, req, host, port);
         let proxy = http.request(options, function (proxyRes) {
             res.writeHead(proxyRes.statusCode, proxyRes.headers)
             proxyRes.pipe(res, {
@@ -23,15 +15,7 @@ function ProxyPass() {
         });
     };
     this.request = function (domain, host, port, req, res, callBackFn) {
-        let options = {
-            hostname: host,
-            port: port,
-            path: req.url,
-            method: req.method,
-            headers: req.headers,
-            gzip: true
-        };
-        options.headers["host"] = domain;
+        let options = buildRequestOptions(domain, req, host, port);
         let proxy = http.request(options, function (proxyRes) {
             let contentType = proxyRes.headers["content-type"];
             if (contentType != null && contentType.indexOf("text/html") >= 0) {
@@ -59,5 +43,23 @@ function ProxyPass() {
         req.pipe(proxy, {
             end: true
         });
+    }
+    function buildRequestOptions(domain, req, host, port) {
+        let options = {
+            "hostname": host || req.headers.host,
+            "port": port || 80,
+            "path": req.url,
+            "method": req.method,
+            "headers": req.headers,
+            "gzip": true
+        };
+        options.headers["host"] = domain;
+        //options.headers["X-Forwarded-Host"] = domain;
+        //options.headers["X-Forwarded-For"] = domain;
+        options.headers["X_FORWARDED_PROTO"] = "https";
+        options.headers["X-Forwarded-Proto"] = "https";
+        options.headers["HTTP_X_FORWARDED_PROTO"] = "https"
+        options.headers["HTTPS"] = "on";
+        return options;
     }
 }
