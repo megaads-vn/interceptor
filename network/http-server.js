@@ -12,11 +12,14 @@ function HttpServer() {
                     redirectHttpHosts.push(sslHost.hostname);
                 }
             });
-            https.createServer({}, options.ssl.hosts, function (req, res) {
-                req.protocol = "https";
-                onRequest(req, res);
-            }).listen(options.ssl.port);
-            logger.info("SSL Server is listening on port: ", options.ssl.port);
+            if (options.ssl.hosts.length > 0) {
+                let defaultOption = options.ssl.hosts.shift();
+                https.createServer(defaultOption, options.ssl.hosts, function (req, res) {
+                    req.protocol = "https";
+                    onRequest(req, res);
+                }).listen(options.ssl.port);
+                logger.info("SSL Server is listening on port: ", options.ssl.port);
+            }
         }
         http.createServer(function (req, res) {
             if (redirectHttpHosts.indexOf(req.headers.host) > -1) {
