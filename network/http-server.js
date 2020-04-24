@@ -9,7 +9,7 @@ function HttpServer() {
         if (options.ssl.enable) {
             options.ssl.hosts.forEach(sslHost => {
                 if (sslHost.redirectHttp) {
-                    redirectHttpHosts.push(hostname);
+                    redirectHttpHosts.push(sslHost.hostname);
                 }
             });
             https.createServer({}, options.ssl.hosts, function (req, res) {
