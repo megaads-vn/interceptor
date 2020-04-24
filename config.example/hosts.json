@@ -10,6 +10,7 @@
             "enable": false,
             "cert": "~/.ssh/default-cert.pem",
             "key": "~/.ssh/default-key.pem",
+            "ca": "~/.ssh/default-chain.pem",
             "redirectHttp": false
         },
         "cache": {

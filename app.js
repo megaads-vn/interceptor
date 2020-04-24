@@ -30,6 +30,7 @@ function buildServerOption() {
                     "hostname": hostname,
                     "cert": fs.readFileSync(host.ssl.cert),
                     "key": fs.readFileSync(host.ssl.key),
+                    "ca": fs.readFileSync(host.ssl.ca),
                     "redirectHttp": host.ssl.redirectHttp
                 });
             }
