@@ -1,4 +1,5 @@
 module.exports = HttpServer;
+const { constants } = require('crypto');
 const http = require('http');
 const https = require('vhttps');
 const logger = use("util/logger");
@@ -14,6 +15,7 @@ function HttpServer() {
             });
             if (options.ssl.hosts.length > 0) {
                 let defaultOption = options.ssl.hosts.shift();
+                defaultOption.secureOptions = constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1
                 https.createServer(defaultOption, options.ssl.hosts, function (req, res) {
                     req.protocol = "https";
                     onRequest(req, res);
