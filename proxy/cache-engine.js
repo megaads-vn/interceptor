@@ -4,7 +4,7 @@ var RequestHandler = use("network/request-handler");
 var proxyPass = use("proxy/proxy-pass");
 var ruleParser = use("proxy/rule-parser");
 var logger = use("util/logger");
-var urlParser = require("url");
+var urlUtil = use("util/url");
 const HybridCache = require("mega-hybrid-cache");
 var hybridCache = new HybridCache({
     limit: 1024
@@ -27,13 +27,13 @@ function CacheEngine() {
         let startTime = process.hrtime();
         let cacheParserResult = ruleParser.parse(req);
         logger.debug("req.url", req.url);
-        const urlPath = urlParser.parse(req.url).pathname;
         if (cacheParserResult != null && cacheParserResult.enable == true) {
+            const cacheUrl = urlUtil.removeParams(cacheParserResult.strippedQueryParams, req.url);
             const cacheKey = cacheParserResult.domain + "::"
                 + cacheParserResult.name + "::"
                 + req.protocol + "::"
                 + cacheParserResult.device + "::"
-                + encodeURIComponent(urlPath);
+                + encodeURIComponent(cacheUrl);
             let cacheData = hybridCache.get(cacheKey);
             if (cacheData == null) {
                 logger.debug("CACHE MISS", req.url);

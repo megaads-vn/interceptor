@@ -41,6 +41,11 @@
                     }
                 }
             ],
+            "strippedQueryParams": [
+                "adgroupid",
+                "campaignid",
+                "gclid"
+            ],
             "passes": {
                 "cookies": [
                     "user_id"
