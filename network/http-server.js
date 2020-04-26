@@ -47,8 +47,11 @@ function HttpServer() {
         }
     }
     function onRequest(req, res) {
-        handers.forEach(hander => {
-            hander.onRequest(req, res);
+        return new Promise(function(resolve, reject){ 
+            handers.forEach(hander => {
+                hander.onRequest(req, res);
+            });
+            resolve(true);
         });
     }
 }
