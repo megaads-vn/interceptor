@@ -9,6 +9,8 @@ function ProxyPass() {
             proxyRes.pipe(res, {
                 end: true
             });
+        }).on("error", (err) => {
+            logger.error("ProxyPass pass exception: " + err.message);
         });
         req.pipe(proxy, {
             end: true
@@ -38,7 +40,7 @@ function ProxyPass() {
                 });
             }
         }).on("error", (err) => {
-            logger.error("Error: " + err.message);
+            logger.error("ProxyPass request exception: " + err.message);
         });
         req.pipe(proxy, {
             end: true

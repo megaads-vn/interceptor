@@ -38,8 +38,9 @@ function Logger() {
         var outputDataStr = "";
         try {
             outputDataStr = JSON.stringify(outputData);
+            fs.appendFile(__APP_DIR + "/storage/logs/interceptor.log", msg + " " + (outputData != "" ? outputDataStr : "") + " \r\n", function (err) { });
         } catch (exc) {
+            console.log("Cannot save log data to file", exc);
         }
-        fs.appendFile(__APP_DIR + "/storage/logs/interceptor.log", msg + " " + (outputData != "" ? outputDataStr : "") + " \r\n", function (err) { });
     }
 }
