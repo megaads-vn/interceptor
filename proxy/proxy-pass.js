@@ -11,6 +11,10 @@ function ProxyPass() {
             });
         }).on("error", (err) => {
             logger.error("ProxyPass pass exception: " + err.message);
+            logger.error("- domain: ", domain);
+            logger.error("- host: ", host);
+            logger.error("- port: ", port);
+            logger.error("- url: ", req.url);
         });
         req.pipe(proxy, {
             end: true
@@ -41,6 +45,10 @@ function ProxyPass() {
             }
         }).on("error", (err) => {
             logger.error("ProxyPass request exception: " + err.message);
+            logger.error("- domain: ", domain);
+            logger.error("- host: ", host);
+            logger.error("- port: ", port);
+            logger.error("- url: ", req.url);
         });
         req.pipe(proxy, {
             end: true
