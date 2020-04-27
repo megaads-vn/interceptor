@@ -65,13 +65,15 @@ function ProxyPass() {
         };
         options.headers["host"] = domain;
         if (req.protocol == "https") {
-            //options.headers["X-Forwarded-Host"] = domain;
-            options.headers["X-Forwarded-For"] = req.connection.remoteAddress;
             options.headers["X_FORWARDED_PROTO"] = "https";
             options.headers["X-Forwarded-Proto"] = "https";
             options.headers["HTTP_X_FORWARDED_PROTO"] = "https"
             options.headers["HTTPS"] = "on";
         }
+        if (req.connection != null && req.connection.remoteAddres != null) {
+            options.headers["X-Forwarded-For"] = req.connection.remoteAddress;
+        }
+        //options.headers["X-Forwarded-Host"] = domain;
         return options;
     }
 }
