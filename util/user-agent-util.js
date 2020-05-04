@@ -1,6 +1,7 @@
 module.exports = new UserAgentUtil();
 var MobileDetect = require('mobile-detect');
 var detectionCache = {};
+var userAgentStorage = {};
 function UserAgentUtil() {
     this.detectDevice = function (userAgent) {
         var retval = detectionCache[userAgent];
@@ -17,7 +18,11 @@ function UserAgentUtil() {
                 retval += "_bot";
             }
             detectionCache[userAgent] = retval;
+            userAgentStorage[retval] = userAgent;
         }
         return retval;
+    }
+    this.getUserAgent = function (device) {
+        return userAgentStorage[device];
     }
 }

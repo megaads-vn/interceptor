@@ -1,20 +1,23 @@
 module.exports = new ProxyPass();
 var http = require('http');
+http.globalAgent.keepAlive = true;
 var logger = use("util/logger");
 function ProxyPass() {
     this.pass = function (domain, host, port, req, res) {
         let options = buildRequestOptions(domain, req, host, port);
-        let proxy = http.request(options, function (proxyRes) {
-            res.writeHead(proxyRes.statusCode, proxyRes.headers)
-            proxyRes.pipe(res, {
-                end: true
-            });
-        }).on("error", (err) => {
-            logger.error("ProxyPass pass exception: " + err.message);
-            logger.error("- domain: ", domain);
-            logger.error("- host: ", host);
-            logger.error("- port: ", port);
-            logger.error("- url: ", req.url);
+        let proxy = this.sendRequest(options, function (proxyRes, error) {
+            if (error) {
+                logger.error("ProxyPass pass exception: " + err.message);
+                logger.error("- domain: ", domain);
+                logger.error("- host: ", host);
+                logger.error("- port: ", port);
+                logger.error("- url: ", req.url);
+            } else {
+                res.writeHead(proxyRes.statusCode, proxyRes.headers)
+                proxyRes.pipe(res, {
+                    end: true
+                });
+            }
         });
         req.pipe(proxy, {
             end: true
@@ -22,38 +25,48 @@ function ProxyPass() {
     };
     this.request = function (domain, host, port, req, res, callBackFn) {
         let options = buildRequestOptions(domain, req, host, port);
-        let proxy = http.request(options, function (proxyRes) {
-            let contentType = proxyRes.headers["content-type"];
-            if (contentType != null && contentType.indexOf("text/html") >= 0) {
-                let buffer = [];
-                proxyRes.on('data', function (chunk) {
-                    buffer.push(chunk);
-                });
-                proxyRes.on('end', function () {
-                    buffer = Buffer.concat(buffer);
-                    callBackFn({
-                        "statusCode": proxyRes.statusCode,
-                        "headers": proxyRes.headers,
-                        "data": buffer
-                    });
-                });
+        let proxy = this.sendRequest(options, function (proxyRes, error) {
+            if (error) {
+                logger.error("ProxyPass request exception: " + err.message);
+                logger.error("- domain: ", domain);
+                logger.error("- host: ", host);
+                logger.error("- port: ", port);
+                logger.error("- url: ", req.url);
             } else {
-                res.writeHead(proxyRes.statusCode, proxyRes.headers)
-                proxyRes.pipe(res, {
-                    end: true
-                });
+                let contentType = proxyRes.headers["content-type"];
+                if (contentType != null && contentType.indexOf("text/html") >= 0) {
+                    let buffer = [];
+                    proxyRes.on('data', function (chunk) {
+                        buffer.push(chunk);
+                    });
+                    proxyRes.on('end', function () {
+                        buffer = Buffer.concat(buffer);
+                        callBackFn({
+                            "statusCode": proxyRes.statusCode,
+                            "headers": proxyRes.headers,
+                            "data": buffer
+                        });
+                    });
+                } else {
+                    res.writeHead(proxyRes.statusCode, proxyRes.headers)
+                    proxyRes.pipe(res, {
+                        end: true
+                    });
+                }
             }
-        }).on("error", (err) => {
-            logger.error("ProxyPass request exception: " + err.message);
-            logger.error("- domain: ", domain);
-            logger.error("- host: ", host);
-            logger.error("- port: ", port);
-            logger.error("- url: ", req.url);
         });
         req.pipe(proxy, {
             end: true
         });
     }
+    this.sendRequest = function (options, callBackFn) {
+        return http.request(options, function (res) {
+            callBackFn(res);
+        }).on("error", (err) => {
+            callBackFn(null, err);
+        });
+    }
+    
     function buildRequestOptions(domain, req, host, port) {
         let options = {
             "hostname": host || req.headers.host,

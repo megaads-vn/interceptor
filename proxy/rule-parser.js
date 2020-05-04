@@ -1,4 +1,4 @@
-module.exports = new RuleParser();
+module.exports = RuleParser;
 var UrlPattern = require("url-pattern");
 var urlParser = require("url");
 var userAgentUtil = use("util/user-agent-util");
@@ -41,8 +41,6 @@ function RuleParser() {
             if (domainConfig.cache != null
                 && domainConfig.cache.enable == true
                 && req.method === "GET"
-                && (req.headers["accept"] != null
-                    && (req.headers["accept"].indexOf("text/html") >= 0))
             ) {
                 const urlPath = urlParser.parse(req.url).pathname;
                 // check passes conditions

@@ -4,5 +4,11 @@
     "ssl": {
         "enable": false,
         "port": 443
+    },
+    "cache": {
+        "refresh": {
+            "enable": true,
+            "rate": 600000
+        }
     }
 }

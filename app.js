@@ -2,16 +2,45 @@ global.__APP_DIR = __dirname;
 global.use = function (packagePath) {
     return require(__APP_DIR + "/" + packagePath);
 };
-const fs = require("fs");
+const cluster = require('cluster');
+const numCPUs = 2;
+const logger = use("util/logger");
 const AppConfig = use("config/app");
+const fs = require("fs");
 const HostsConfig = use("config/hosts");
 const HttpServer = use("network/http-server");
 const CacheEngine = use("proxy/cache-engine");
-let server = new HttpServer();
-let cacheEngine = new CacheEngine();
-cacheEngine.init(AppConfig.backendHost, AppConfig.backendPort);
-server.addHandler(cacheEngine);
-server.start(buildServerOption());
+if (cluster.isMaster) {
+    masterProcess();
+} else {
+    childProcess();
+}
+cluster.on('exit', function (worker) {
+    logger.info('Worker %d died :(', worker.id);
+    cluster.fork();
+});
+function masterProcess() {
+    logger.info(`Master ${process.pid} is running`);
+    for (let i = 0; i < numCPUs; i++) {
+        logger.info(`Forking process number ${i}...`);
+        var worker = cluster.fork();
+        worker.send({
+            task: 'boot',
+            data: {}
+        });
+    }
+}
+function childProcess() {
+    process.on('message', function (msg) {
+        if (msg.task === 'boot') {
+            let server = new HttpServer();
+            let cacheEngine = new CacheEngine();
+            cacheEngine.init(AppConfig.cache);
+            server.addHandler(cacheEngine);
+            server.start(buildServerOption());
+        }
+    });
+}
 function buildServerOption() {
     var serverOptions = {
         "port": AppConfig.port,

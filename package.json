@@ -23,8 +23,9 @@
     },
     "homepage": "https://github.com/megaads-vn/interceptor",
     "dependencies": {
-        "commander": "*",
-        "mega-hybrid-cache": "^1.0.9",
+        "commander": "^5.1.0",
+        "etag": "^1.8.1",
+        "mega-hybrid-cache": "^1.0.14",
         "mobile-detect": "1.*",
         "url-pattern": "1.*",
         "vhttps": "^0.1.1"
