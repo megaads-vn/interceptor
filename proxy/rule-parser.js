@@ -41,6 +41,8 @@ function RuleParser() {
             if (domainConfig.cache != null
                 && domainConfig.cache.enable == true
                 && req.method === "GET"
+                && (req.headers["accept"] != null
+                    && (req.headers["accept"].indexOf("text/html") >= 0))
             ) {
                 const urlPath = urlParser.parse(req.url).pathname;
                 // check passes conditions
