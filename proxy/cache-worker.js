@@ -45,7 +45,7 @@ function CacheWorker() {
 
     }
     function refreshCache(cacheKey) {
-        logger.debug("Refresh cache", cacheKey);
+        logger.info("Refresh cache", cacheKey);
         return new Promise(function (resolve, reject) {
             let cacheObj = urlUtil.parseCacheKey(cacheKey);
             let requestOptions = buildRequestOptions(cacheObj);
