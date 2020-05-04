@@ -31,9 +31,7 @@ function Logger() {
         }
         msg = msg == null ? "" : msg;
         outputData = outputData == null ? "" : outputData;
-        if (type !== "info") {
-            msg = "[" + new Date() + "] [" + type + "]: " + msg;
-        }
+        msg = "[" + new Date() + "] [" + type + "]: " + msg;
         console.log(colors[type] + msg + colors.normal, outputData);
         var outputDataStr = "";
         try {

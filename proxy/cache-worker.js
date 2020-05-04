@@ -32,7 +32,7 @@ function CacheWorker() {
                 const element = cacheMap[index];
                 if (now - element.created_at >= refreshRate) {
                     try {
-                        await sleep(300);
+                        await sleep(500);
                         await refreshCache(element.key);
                     } catch (error) {
                         logger.error("Refresh cache failed", error);
@@ -45,7 +45,6 @@ function CacheWorker() {
 
     }
     function refreshCache(cacheKey) {
-        logger.info("Refresh cache", cacheKey);
         return new Promise(function (resolve, reject) {
             let cacheObj = urlUtil.parseCacheKey(cacheKey);
             let requestOptions = buildRequestOptions(cacheObj);
@@ -70,6 +69,7 @@ function CacheWorker() {
                         });
                         // after: check cached status
                         if (CACHED_STATUS_CODES.indexOf(result.statusCode) > -1) {
+                            logger.info("Refresh cache", cacheKey);
                             hybridCache.put(cacheKey, result, hostsConfig[cacheObj.domain].cache.maxAge);
                         }
                         resolve();
@@ -96,7 +96,7 @@ function CacheWorker() {
                 "path": path,
                 "method": method,
                 "headers": {
-                    "Host": hostname,
+                    "Host": cacheObj.domain,
                     "User-Agent": userAgent,
                     "Accept-Encoding": "gzip, deflate, br",
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
