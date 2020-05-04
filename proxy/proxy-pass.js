@@ -1,13 +1,13 @@
 module.exports = new ProxyPass();
 var http = require('http');
 http.globalAgent.keepAlive = true;
-var logger = use("util/logger");
+var logger = use("util/logger")
 function ProxyPass() {
     this.pass = function (domain, host, port, req, res) {
         let options = buildRequestOptions(domain, req, host, port);
         let proxy = this.sendRequest(options, function (proxyRes, error) {
             if (error) {
-                logger.error("ProxyPass pass exception: " + err.message);
+                logger.error("ProxyPass pass exception: " + error.message);
                 logger.error("- domain: ", domain);
                 logger.error("- host: ", host);
                 logger.error("- port: ", port);
@@ -27,7 +27,7 @@ function ProxyPass() {
         let options = buildRequestOptions(domain, req, host, port);
         let proxy = this.sendRequest(options, function (proxyRes, error) {
             if (error) {
-                logger.error("ProxyPass request exception: " + err.message);
+                logger.error("ProxyPass request exception: " + error.message);
                 logger.error("- domain: ", domain);
                 logger.error("- host: ", host);
                 logger.error("- port: ", port);
