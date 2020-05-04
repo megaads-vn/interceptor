@@ -3,7 +3,7 @@ global.use = function (packagePath) {
     return require(__APP_DIR + "/" + packagePath);
 };
 const cluster = require('cluster');
-const numCPUs = 2;
+const numCPUs = require('os').cpus().length;;
 const logger = use("util/logger");
 const AppConfig = use("config/app");
 const fs = require("fs");
