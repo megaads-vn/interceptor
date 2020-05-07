@@ -64,8 +64,9 @@ function CacheWorker() {
                         };
                         delete result.headers["set-cookie"];
                         result.headers = setCacheHeaders(result.headers, {
-                            "maxAge": hostsConfig[cacheObj.domain].cache.maxAge,
-                            "cacheStatus": ""
+                            "max-age": hostsConfig[cacheObj.domain].cache.maxAge,
+                            "device": cacheObj.device,
+                            "refreshed": true
                         });
                         // after: check cached status
                         if (CACHED_STATUS_CODES.indexOf(result.statusCode) > -1) {
@@ -118,16 +119,18 @@ function CacheWorker() {
     function setCacheHeaders(headers, options) {
         let currentTime = new Date();
         headers["cache-control"] = "public";
-        if (options.maxAge) {
-            headers["cache-control"] += ", max-age=" + options.maxAge;
+        if (options["max-age"]) {
+            headers["cache-control"] += ", max-age=" + options["max-age"];
         }
         delete headers["expires"];
         headers["last-modified"] = currentTime.toUTCString();
         delete headers["set-cookie"];
         headers["x-cache-engine"] = "interceptor";
-        headers["x-cache-engine-refresh"] = "true";
+        for (const key in options) {
+            headers["x-cache-engine-" + key] = options[key];
+        }
         return headers;
-    }    
+    }
     function sleep(ms) {
         return new Promise((resolve) => {
             setTimeout(resolve, ms);

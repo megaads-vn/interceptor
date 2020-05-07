@@ -72,6 +72,7 @@ function CacheEngine() {
     function setCacheHeaders(result, cacheParserResult) {
         let currentTime = new Date();
         result.headers["x-cache-engine"] = "interceptor";
+        result.headers["x-cache-engine-device"] = cacheParserResult.device;
         result.headers["cache-control"] = "public, max-age=" + cacheParserResult.maxAge;
         delete result.headers["expires"];
         result.headers["last-modified"] = currentTime.toUTCString();
