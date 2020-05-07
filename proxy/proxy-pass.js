@@ -83,7 +83,7 @@ function ProxyPass() {
             options.headers["HTTP_X_FORWARDED_PROTO"] = "https"
             options.headers["HTTPS"] = "on";
         }
-        if (req.connection != null && req.connection.remoteAddres != null) {
+        if (req.connection != null && req.connection.remoteAddress != null) {
             options.headers["X-Forwarded-For"] = req.connection.remoteAddress;
         }
         //options.headers["X-Forwarded-Host"] = domain;
