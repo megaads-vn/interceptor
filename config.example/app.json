@@ -8,7 +8,8 @@
     "cache": {
         "refresh": {
             "enable": true,
-            "rate": 600000
+            "rate": 200000
         }
-    }
+    },
+    "clusters": 2
 }

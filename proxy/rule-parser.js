@@ -44,10 +44,10 @@ function RuleParser() {
                 && (req.headers["accept"] != null
                     && (req.headers["accept"].indexOf("text/html") >= 0))
             ) {
-                const urlPath = urlParser.parse(req.url).pathname;
                 // check passes conditions
                 let isPassed = false;
                 if (domainConfig.cache.passes != null) {
+                    const urlPath = urlParser.parse(req.url).pathname;
                     // pass routes
                     if (domainConfig.cache.passes.routes != null
                         && domainConfig.cache.passes.routes.includes(urlPath) === true) {

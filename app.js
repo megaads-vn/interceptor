@@ -3,7 +3,6 @@ global.use = function (packagePath) {
     return require(__APP_DIR + "/" + packagePath);
 };
 const cluster = require('cluster');
-const numCPUs = require('os').cpus().length;;
 const logger = use("util/logger");
 const AppConfig = use("config/app");
 const fs = require("fs");
@@ -21,7 +20,7 @@ cluster.on('exit', function (worker) {
 });
 function masterProcess() {
     logger.info(`Master ${process.pid} is running`);
-    for (let i = 0; i < numCPUs; i++) {
+    for (let i = 0; i < AppConfig.clusters; i++) {
         logger.info(`Forking process number ${i}...`);
         var worker = cluster.fork();
         worker.send({
