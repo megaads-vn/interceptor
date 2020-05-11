@@ -13,7 +13,7 @@ function RuleParser() {
                 rules.forEach(item => {
                     let pattern = null;
                     switch (item.type) {
-                        case 'regex':
+                        case "regex":
                             pattern = new UrlPattern(new RegExp(item.url));
                             break;
                         default:
