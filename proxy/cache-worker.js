@@ -70,7 +70,7 @@ function CacheWorker() {
                         });
                         // after: check cached status
                         if (CACHED_STATUS_CODES.indexOf(result.statusCode) > -1) {
-                            logger.info("Refresh cache", cacheKey);
+                            logger.debug("Refresh cache", cacheKey);
                             hybridCache.put(cacheKey, result, hostsConfig[cacheObj.domain].cache.maxAge);
                         }
                         resolve();

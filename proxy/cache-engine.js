@@ -37,8 +37,8 @@ function CacheEngine() {
         // cache response
         let startTime = process.hrtime();
         let cacheParserResult = ruleParser.parse(req);
-        logger.debug("req.url", req.url);
-        logger.debug("cacheParserResult", cacheParserResult);
+        // logger.debug("req.url", req.url);
+        // logger.debug("cacheParserResult", cacheParserResult);
         if (cacheParserResult != null && cacheParserResult.enable == true) {
             const cacheUrl = urlUtil.removeParams(cacheParserResult.strippedQueryParams, req.url);
             const cacheKey = urlUtil.buildCacheKey({
