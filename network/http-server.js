@@ -49,8 +49,12 @@ function HttpServer() {
         }
     }
     function onRequest(req, res) {
-        handers.forEach(hander => {
-            hander.onRequest(req, res);
-        });
+        for (let i = 0; i < handers.length; i++) {
+            let hander = handers[i];
+            let result = hander.onRequest(req, res);
+            if (result === false) {
+                break;
+            }
+        }
     }
 }

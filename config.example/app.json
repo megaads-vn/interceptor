@@ -11,5 +11,8 @@
             "rate": 200000
         }
     },
-    "clusters": 2
+    "clusters": 2,
+    "ip2proxy": {
+        "path": "/Volumes/Ext/Applications/Nodejs/interceptor/IP2PROXY-IP-PROXYTYPE-COUNTRY.BIN"
+    },
 }

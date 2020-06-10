@@ -25,6 +25,7 @@
     "dependencies": {
         "commander": "^5.1.0",
         "etag": "^1.8.1",
+        "ip2proxy-nodejs": "^2.2.0",
         "mega-hybrid-cache": "^1.0.14",
         "mobile-detect": "1.*",
         "url-pattern": "1.*",
