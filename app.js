@@ -9,7 +9,7 @@ const fs = require("fs");
 const HostsConfig = use("config/hosts");
 const HttpServer = use("network/http-server");
 const CacheEngine = use("proxy/cache-engine");
-//const ProxyValidate = use("proxy/proxy-validate");
+const ProxyValidate = use("proxy/proxy-validate");
 if (cluster.isMaster) {
     masterProcess();
 } else {
@@ -34,9 +34,10 @@ function childProcess() {
     process.on('message', function (msg) {
         if (msg.task === 'boot') {
             let server = new HttpServer();
-            // let proxyValidate = new ProxyValidate();
-            // proxyValidate.init(AppConfig.ip2proxy);
-            // server.addHandler(proxyValidate);
+            let proxyValidate = new ProxyValidate();
+            proxyValidate.init(AppConfig.ip2proxy);
+            server.addHandler(proxyValidate);
+
             let cacheEngine = new CacheEngine();
             cacheEngine.init(AppConfig.cache);
             server.addHandler(cacheEngine);
@@ -44,6 +45,7 @@ function childProcess() {
         }
     });
 }
+
 function buildServerOption() {
     var serverOptions = {
         "port": AppConfig.port,
