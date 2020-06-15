@@ -19,17 +19,36 @@ function ProxyValidate() {
         let result = true;
         if (moduleEnable) {
             let ip = getIp(req);
-            if (isProxy(ip)) {
+            let userAgent = req.headers['user-agent'] || '';
+            let isBot = this.isBot(userAgent);
+            if (!isBot && this.isProxy(ip)) {
                 result = false;
                 res.writeHead(500, {});
                 res.end("Invalid IP. Internal Server Error");
                 logger.error("Invalid IP", ip)
             }
+
+
         }
         return result;
     }
 
-     function isProxy(ip) {
+    this.isBot = function (userAgent) {
+        let result = false;
+        let bots = options.bots ? options.bots : [];
+        if (userAgent && bots) {
+            for (let i = 0; i < bots.length; i++) {
+                let bot = bots[i];
+                if (bot && (userAgent == bot || userAgent.includes(bot))) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+     this.isProxy = function(ip) {
         let isWhiteList = false;
         let whiteList =  options.white_list ? options.white_list : [];
         if (ip && whiteList && (whiteList.includes(ip) || whiteList.includes(ip.replace('::ffff:', '')))) {

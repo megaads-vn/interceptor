@@ -15,6 +15,7 @@
     "ip2proxy": {
         "path": "/Volumes/Ext/Applications/Nodejs/interceptor/IP2PROXY-IP-PROXYTYPE-COUNTRY.BIN",
         "module_enable": false,
-        "white_list": ["127.0.0.1"]
+        "white_list": ["127.0.0.1"],
+        "bots": ["Googlebot" ]
     }
 }
