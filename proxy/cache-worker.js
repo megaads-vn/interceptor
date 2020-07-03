@@ -118,10 +118,7 @@ function CacheWorker() {
     }
     function setCacheHeaders(headers, options) {
         let currentTime = new Date();
-        headers["cache-control"] = "public";
-        if (options["max-age"]) {
-            headers["cache-control"] += ", max-age=" + options["max-age"];
-        }
+        headers["cache-control"] = "private, max-age=0, no-cache, no-store";
         delete headers["expires"];
         headers["last-modified"] = currentTime.toUTCString();
         delete headers["set-cookie"];
